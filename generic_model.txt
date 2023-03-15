@@ -1,0 +1,52 @@
+from pyspark.sql import SparkSession
+from initHdpEnv import init_env
+import time
+import sys
+import datetime
+
+
+# 入参格式校验
+def validate(date_text):
+    try:
+        datetime.datetime.strptime(date_text, '%Y%m%d')
+    except ValueError:
+        raise ValueError("Incorrect data format, should be YYYYMMDD")
+
+def connHive(etl_dt):   
+    init_env()
+    # 创建SparkSession并连接到Hive
+    spark = SparkSession.builder.appName("Connect to Hive").config("spark.sql.catalogImplementation", "hive").enableHiveSupport().getOrCreate()
+    {{替换内容}}
+
+    # 关闭SparkSession
+    spark.stop()
+
+if __name__ == "__main__":
+    etl_dt=''
+    if len(sys.argv)>1:
+        etl_dt=sys.argv[1]
+    else:
+        print('请输入时间参数')
+        exit()
+
+    validate(etl_dt)
+    # 记录开始时间
+    start_time = time.time()
+    try: 
+        connHive(etl_dt)
+    except Exception as e: 
+        print(f"Caught an exception: {e}")
+    finally: 
+        # 记录结束时间
+        end_time = time.time()
+        # 计算脚本运行时间
+        run_time = end_time - start_time
+        print(f"脚本运行时间：{run_time:.2f} 秒")
+
+
+
+ 
+
+
+
+
